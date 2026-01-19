@@ -20,16 +20,39 @@ const LoginPage = ({ onLoginSuccess }) => {
       return;
     }
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Call backend API to login
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          role,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setError(result.message || 'Login failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+
+      const { data } = result;
       const userData = {
-        id: `user-${Math.random()}`,
-        name: email.split('@')[0],
-        email: email,
-        picture: '',
+        id: data.user.id,
+        name: data.user.fullName,
+        email: data.user.email,
+        picture: data.user.avatarUrl || '',
         loginTime: new Date().toISOString(),
-        token: `token-${Math.random()}`,
-        role: role
+        token: data.accessToken,
+        role: data.user.role,
+        profileId: data.user.facultyProfile?.id || null,
+        designation: data.user.facultyProfile?.designation || '',
       };
 
       if (role === 'hod') {
@@ -37,11 +60,16 @@ const LoginPage = ({ onLoginSuccess }) => {
       }
 
       localStorage.setItem('facultyAuth', JSON.stringify(userData));
-      localStorage.setItem('authToken', userData.token);
+      localStorage.setItem('authToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
 
       onLoginSuccess(userData);
       setLoading(false);
-    }, 500);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Network error. Please check if the server is running.');
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faBarChart, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faBarChart, faEye, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../styles/COPOAttainmentView.css';
 import { formatCourseLabel } from '../utils/courseFormatter';
 
 const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange, facultyData, onLogout }) => {
+  // State for editable cells
+  const [editingCell, setEditingCell] = useState(null);
+  const [editValue, setEditValue] = useState('');
+  const [previousValue, setPreviousValue] = useState('');
   // Mock courses data
   const mockCourses = [
     { 
@@ -137,6 +141,79 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
     ? Math.round(coData.reduce((sum, co) => sum + co.attainment, 0) / coData.length)
     : 0;
 
+  // Handle cell click to enter edit mode
+  const handleCellClick = (cellId, currentValue) => {
+    setEditingCell(cellId);
+    setPreviousValue(currentValue.toString());
+    setEditValue(currentValue.toString());
+  };
+
+  // Handle value change with number validation and decimal limit (0.0 to 3.0)
+  const handleValueChange = (e) => {
+    let value = e.target.value;
+    
+    // Allow empty string for clearing
+    if (value === '') {
+      setEditValue(value);
+      return;
+    }
+    
+    // Only allow numbers and one decimal point
+    if (/^\d*\.?\d*$/.test(value)) {
+      // Check if value is within range [0.0 to 3.0]
+      const numValue = parseFloat(value);
+      if (!isNaN(numValue) && numValue > 3) {
+        // Don't update if exceeds 3
+        return;
+      }
+      
+      // Limit decimal places to 2 (e.g., 2.5, not 2.555)
+      if (value.includes('.')) {
+        const [intPart, decPart] = value.split('.');
+        if (decPart && decPart.length > 2) {
+          return; // Don't allow more than 2 decimal places
+        }
+      }
+      
+      setEditValue(value);
+    }
+  };
+
+  // Handle Enter key press to save
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSaveEdit();
+    } else if (e.key === 'Escape') {
+      handleCancelEdit();
+    }
+  };
+
+  // Save edited value
+  const handleSaveEdit = () => {
+    if (editValue !== '' && !isNaN(parseFloat(editValue))) {
+      const numValue = parseFloat(editValue);
+      
+      // Validate range
+      if (numValue < 0 || numValue > 3) {
+        alert('Value must be between 0.0 and 3.0');
+        return;
+      }
+      
+      // Here you would typically save to backend
+      console.log(`Saved cell ${editingCell}: ${previousValue} → ${editValue}`);
+      setEditingCell(null);
+      setEditValue('');
+      setPreviousValue('');
+    }
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingCell(null);
+    setEditValue('');
+    setPreviousValue('');
+  };
+
   if (loading) {
     return (
       <div className="co-po-attainment-view">
@@ -219,14 +296,166 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
                 {coData.map((co) => (
                   <tr key={co.id} className="component-level-row">
                     <td className="component-co-cell">{co.id}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.mid.toFixed(1)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.internal.toFixed(1)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.pbl.toFixed(1)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.overall_internal.toFixed(2)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.end.toFixed(1)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.viva.toFixed(1)}</td>
-                    <td className="component-cell">{mockComponentScores[co.id]?.overall_external.toFixed(2)}</td>
-                    <td className="component-cell component-final">{mockComponentScores[co.id]?.final.toFixed(2)}</td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-mid`, mockComponentScores[co.id]?.mid)}
+                    >
+                      {editingCell === `${co.id}-mid` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.mid.toFixed(1)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-internal`, mockComponentScores[co.id]?.internal)}
+                    >
+                      {editingCell === `${co.id}-internal` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.internal.toFixed(1)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-pbl`, mockComponentScores[co.id]?.pbl)}
+                    >
+                      {editingCell === `${co.id}-pbl` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.pbl.toFixed(1)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-overall_internal`, mockComponentScores[co.id]?.overall_internal)}
+                    >
+                      {editingCell === `${co.id}-overall_internal` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.overall_internal.toFixed(2)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-end`, mockComponentScores[co.id]?.end)}
+                    >
+                      {editingCell === `${co.id}-end` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.end.toFixed(1)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-viva`, mockComponentScores[co.id]?.viva)}
+                    >
+                      {editingCell === `${co.id}-viva` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.viva.toFixed(1)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-overall_external`, mockComponentScores[co.id]?.overall_external)}
+                    >
+                      {editingCell === `${co.id}-overall_external` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.overall_external.toFixed(2)
+                      )}
+                    </td>
+                    <td 
+                      className="component-cell component-final editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-final`, mockComponentScores[co.id]?.final)}
+                    >
+                      {editingCell === `${co.id}-final` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.final.toFixed(2)
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -249,7 +478,27 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
               <tbody>
                 <tr>
                   {coData.map((co) => (
-                    <td key={co.id} className="summary-co-cell">{mockComponentScores[co.id]?.final.toFixed(2)}</td>
+                    <td 
+                      key={co.id} 
+                      className="summary-co-cell editable-cell"
+                      onClick={() => handleCellClick(`${co.id}-summary`, mockComponentScores[co.id]?.final)}
+                    >
+                      {editingCell === `${co.id}-summary` ? (
+                        <div className="cell-input-wrapper">
+                          <input 
+                            type="text" 
+                            value={editValue}
+                            onChange={handleValueChange}
+                            onKeyPress={handleKeyPress}
+                            onBlur={handleCancelEdit}
+                            autoFocus
+                            className="cell-input"
+                          />
+                        </div>
+                      ) : (
+                        mockComponentScores[co.id]?.final.toFixed(2)
+                      )}
+                    </td>
                   ))}
                 </tr>
               </tbody>
@@ -285,13 +534,49 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
                     <td className="matrix-srno-cell">{idx + 1}</td>
                     <td className="matrix-co-cell">{co.id}</td>
                     {poData.map((po) => (
-                      <td key={`${co.id}-${po.id}`} className="matrix-po-cell">
-                        {mockCOPOPSOMapping[co.id]?.[po.id] ? mockCOPOPSOMapping[co.id][po.id].toFixed(2) : ''}
+                      <td 
+                        key={`${co.id}-${po.id}`} 
+                        className="matrix-po-cell editable-cell"
+                        onClick={() => handleCellClick(`${co.id}-${po.id}`, mockCOPOPSOMapping[co.id]?.[po.id] || 0)}
+                      >
+                        {editingCell === `${co.id}-${po.id}` ? (
+                          <div className="cell-input-wrapper">
+                            <input 
+                              type="text" 
+                              value={editValue}
+                              onChange={handleValueChange}
+                              onKeyPress={handleKeyPress}
+                              onBlur={handleCancelEdit}
+                              autoFocus
+                              className="cell-input"
+                            />
+                          </div>
+                        ) : (
+                          mockCOPOPSOMapping[co.id]?.[po.id] ? mockCOPOPSOMapping[co.id][po.id].toFixed(2) : ''
+                        )}
                       </td>
                     ))}
                     {psoData.map((pso) => (
-                      <td key={`${co.id}-${pso.id}`} className="matrix-pso-cell">
-                        {mockCOPOPSOMapping[co.id]?.[pso.id] ? mockCOPOPSOMapping[co.id][pso.id].toFixed(2) : ''}
+                      <td 
+                        key={`${co.id}-${pso.id}`} 
+                        className="matrix-pso-cell editable-cell"
+                        onClick={() => handleCellClick(`${co.id}-${pso.id}`, mockCOPOPSOMapping[co.id]?.[pso.id] || 0)}
+                      >
+                        {editingCell === `${co.id}-${pso.id}` ? (
+                          <div className="cell-input-wrapper">
+                            <input 
+                              type="text" 
+                              value={editValue}
+                              onChange={handleValueChange}
+                              onKeyPress={handleKeyPress}
+                              onBlur={handleCancelEdit}
+                              autoFocus
+                              className="cell-input"
+                            />
+                          </div>
+                        ) : (
+                          mockCOPOPSOMapping[co.id]?.[pso.id] ? mockCOPOPSOMapping[co.id][pso.id].toFixed(2) : ''
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -301,11 +586,55 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
                   <td className="matrix-summary-label" colSpan="2">TOTAL / COURSE CODE</td>
                   {poData.map((po) => {
                     const total = coData.reduce((sum, co) => sum + (mockCOPOPSOMapping[co.id]?.[po.id] || 0), 0);
-                    return <td key={`total-${po.id}`} className="matrix-summary-cell">{total > 0 ? total.toFixed(2) : ''}</td>;
+                    return (
+                      <td 
+                        key={`total-${po.id}`} 
+                        className="matrix-summary-cell editable-cell"
+                        onClick={() => handleCellClick(`total-${po.id}`, total)}
+                      >
+                        {editingCell === `total-${po.id}` ? (
+                          <div className="cell-input-wrapper">
+                            <input 
+                              type="text" 
+                              value={editValue}
+                              onChange={handleValueChange}
+                              onKeyPress={handleKeyPress}
+                              onBlur={handleCancelEdit}
+                              autoFocus
+                              className="cell-input"
+                            />
+                          </div>
+                        ) : (
+                          total > 0 ? total.toFixed(2) : ''
+                        )}
+                      </td>
+                    );
                   })}
                   {psoData.map((pso) => {
                     const total = coData.reduce((sum, co) => sum + (mockCOPOPSOMapping[co.id]?.[pso.id] || 0), 0);
-                    return <td key={`total-${pso.id}`} className="matrix-summary-cell">{total > 0 ? total.toFixed(2) : ''}</td>;
+                    return (
+                      <td 
+                        key={`total-${pso.id}`} 
+                        className="matrix-summary-cell editable-cell"
+                        onClick={() => handleCellClick(`total-${pso.id}`, total)}
+                      >
+                        {editingCell === `total-${pso.id}` ? (
+                          <div className="cell-input-wrapper">
+                            <input 
+                              type="text" 
+                              value={editValue}
+                              onChange={handleValueChange}
+                              onKeyPress={handleKeyPress}
+                              onBlur={handleCancelEdit}
+                              autoFocus
+                              className="cell-input"
+                            />
+                          </div>
+                        ) : (
+                          total > 0 ? total.toFixed(2) : ''
+                        )}
+                      </td>
+                    );
                   })}
                 </tr>
               </tbody>
@@ -321,7 +650,7 @@ const COPOAttainmentView = ({ currentScreen, courseId = 'CS101', onScreenChange,
         <div className="info-section">
           <FontAwesomeIcon icon={faLock} />
           <p>
-            This view is <strong>read-only</strong> and provides transparency into how your course outcomes contribute to program outcomes. Data is automatically calculated from your assessment submissions and cannot be manually edited here.
+            This view shows attainable data from your assessment submissions. Click any number to edit it. Data will be automatically calculated and updated.
           </p>
         </div>
             </div>

@@ -45,44 +45,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, courseId }) => {
     setSaveStatus("Saving...");
     
     try {
-      const analysisData = {
-        course_id: courseId,
-        subject_name: data.subject?.name,
-        subject_code: data.subject?.code,
-        course_outcomes: JSON.stringify(editableLectures.length > 0 ? courseOutcomes : data.courseOutcomes),
-        program_outcomes: JSON.stringify(programOutcomes),
-        co_po_mapping: JSON.stringify(editableCOPOMapping),
-        lectures: JSON.stringify(editableLectures),
-        practicals: JSON.stringify(editablePracticals),
-        pbl_activities: JSON.stringify(editablePBL),
-        justifications: JSON.stringify(data.justifications || {}),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+      const semesterNumber = parseInt(localStorage.getItem('semesterNumber') || '5');
+
+      const mappingData = {
+        subjectCode: courseId,
+        subjectName: data.subject?.name,
+        semesterNumber,
+        courseOutcomes: editableLectures.length > 0 ? courseOutcomes : data.courseOutcomes,
+        programOutcomes: programOutcomes,
+        coPoMapping: editableCOPOMapping,
+        lectures: editableLectures,
+        practicals: editablePracticals,
+        pblActivities: editablePBL
       };
 
-      // Check if analysis already exists
-      const { data: existingData, error: fetchError } = await supabase
-        .from('ai_course_analysis')
-        .select('id')
-        .eq('course_id', courseId)
-        .single();
+      // Call backend API to save to CurriculumMapping
+      const response = await fetch('http://localhost:5000/api/curriculum/curriculum-mapping', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mappingData)
+      });
 
-      let result;
-      if (existingData) {
-        // Update existing
-        const { error: updateError } = await supabase
-          .from('ai_course_analysis')
-          .update(analysisData)
-          .eq('course_id', courseId);
-        
-        if (updateError) throw updateError;
-      } else {
-        // Insert new
-        const { error: insertError } = await supabase
-          .from('ai_course_analysis')
-          .insert([analysisData]);
-        
-        if (insertError) throw insertError;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to save curriculum mapping');
       }
 
       setSaveStatus("✅ Saved successfully!");

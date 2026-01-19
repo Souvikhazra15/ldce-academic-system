@@ -77,34 +77,45 @@ async function main() {
     data: { hodUserId: hod.id },
   });
 
-  // Create Faculty User
-  console.log('Creating faculty user...');
-  const facultyPassword = await hashPassword('Faculty@123');
-  const faculty = await prisma.user.upsert({
-    where: { email: 'faculty.john@college.edu' },
-    update: {},
-    create: {
-      email: 'faculty.john@college.edu',
-      password: facultyPassword,
-      fullName: 'Prof. John Doe',
-      role: 'FACULTY',
-      phone: '+91-9876543212',
-      isActive: true,
-    },
-  });
+  // Create Faculty Users and Profiles
+  console.log('Creating faculty users...');
+  
+  const facultiesData = [
+    { email: 'aman.pathak@ldce.ac.in', password: '895689', name: 'Aman Pathak', designation: 'Assistant Professor' },
+    { email: 'chandu.prajapati@ldce.ac.in', password: '895615', name: 'Chandu Prajapati', designation: 'Assistant Professor' },
+    { email: 'meet.gajjar@ldce.ac.in', password: '656532', name: 'Meet Gajjar', designation: 'Associate Professor' },
+    { email: 'harsh.vasava@ldce.ac.in', password: '7563241', name: 'Harsh Vasava', designation: 'Assistant Professor' },
+    { email: 'nishant.chauhan@ldce.ac.in', password: '986231', name: 'Nishant Chauhan', designation: 'Assistant Professor' },
+    { email: 'adarsh.patel@ldce.ac.in', password: '123244', name: 'Adarsh Patel', designation: 'Assistant Professor' },
+  ];
 
-  // Create Faculty Profile
-  await prisma.facultyProfile.upsert({
-    where: { userId: faculty.id },
-    update: {},
-    create: {
-      userId: faculty.id,
-      departmentId: computerDept.id,
-      designation: 'Assistant Professor',
-      qualification: 'M.Tech in Computer Engineering',
-      joiningDate: new Date('2018-08-15'),
-    },
-  });
+  for (const facultyData of facultiesData) {
+    const hashedPassword = await hashPassword(facultyData.password);
+    const user = await prisma.user.upsert({
+      where: { email: facultyData.email },
+      update: {},
+      create: {
+        email: facultyData.email,
+        password: hashedPassword,
+        fullName: facultyData.name,
+        role: 'FACULTY',
+        isActive: true,
+      },
+    });
+
+    // Create Faculty Profile
+    await prisma.facultyProfile.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        userId: user.id,
+        departmentId: computerDept.id,
+        designation: facultyData.designation,
+        qualification: 'M.Tech in Computer Engineering',
+        joiningDate: new Date('2018-08-15'),
+      },
+    });
+  }
 
   // Create Program
   console.log('Creating program...');

@@ -24,6 +24,7 @@ function App() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [facultyData, setFacultyData] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   // Check if user is already logged in on component mount
   useEffect(() => {
@@ -31,6 +32,7 @@ function App() {
     if (storedAuth) {
       try {
         const auth = JSON.parse(storedAuth);
+        console.log('Restored auth:', auth);
         setFacultyData(auth);
         setIsAuthenticated(true);
       } catch (err) {
@@ -39,6 +41,7 @@ function App() {
         localStorage.removeItem('authToken');
       }
     }
+    setIsLoading(false);
   }, []);
 
   const handleLoginSuccess = (data) => {
@@ -91,10 +94,25 @@ function App() {
   };
 
   // Always render routes
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '18px',
+        color: '#666'
+      }}>
+        Loading application...
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route path="/login" element={isAuthenticated ? <Navigate to={facultyData?.role === 'hod' ? '/hod-dashboard' : '/dashboard'} replace /> : <LoginPage onLoginSuccess={handleLoginSuccess} />} />
-      {isAuthenticated && facultyData?.role === 'faculty' && (
+      {isAuthenticated && facultyData?.role === 'FACULTY' && (
         <>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard currentScreen="dashboard" onScreenChange={handleScreenChange} facultyData={facultyData} onLogout={handleLogout} />} />
@@ -110,7 +128,7 @@ function App() {
           <Route path="/lecture-planning" element={<LecturePlanning currentScreen="lecturePlanning" courseId="CS101" onScreenChange={handleScreenChange} facultyData={facultyData} onLogout={handleLogout} />} />
         </>
       )}
-      {isAuthenticated && facultyData?.role === 'hod' && (
+      {isAuthenticated && facultyData?.role === 'HOD' && (
         <>
           <Route path="/" element={<Navigate to="/hod-dashboard" replace />} />
           <Route path="/hod-dashboard" element={<HODDashboard currentScreen="hodDashboard" onScreenChange={handleScreenChange} facultyData={facultyData} onLogout={handleLogout} onRoleSwitch={handleRoleSwitch} />} />
@@ -121,13 +139,25 @@ function App() {
           <Route path="/profile" element={<ProfilePage currentScreen="profile" onScreenChange={handleScreenChange} facultyData={facultyData} onLogout={handleLogout} />} />
         </>
       )}
-      {isAuthenticated && facultyData?.role && (
-        <Route path="/*" element={<Navigate to={facultyData.role === 'hod' ? '/hod-dashboard' : '/dashboard'} replace />} />
-      )}
-      {isAuthenticated && !facultyData?.role && (
-        <Route path="/*" element={<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>Loading...</div>} />
-      )}
       {!isAuthenticated && <Route path="/*" element={<Navigate to="/login" replace />} />}
+      {isAuthenticated && (
+        <Route path="/*" element={
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            flexDirection: 'column',
+            fontSize: '16px',
+            color: '#666'
+          }}>
+            <div style={{marginBottom: '20px'}}>No page found</div>
+            <button onClick={() => navigate(facultyData?.role === 'HOD' ? '/hod-dashboard' : '/dashboard')}>
+              Go to Dashboard
+            </button>
+          </div>
+        } />
+      )}
     </Routes>
   );
 }

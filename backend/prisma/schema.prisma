@@ -191,6 +191,14 @@ model CurriculumMapping {
   programId       String      @map("program_id")
   subjectId       String      @map("subject_id")
   semesterNumber  Int         @map("semester_number") // "This subject is taught in Sem 5"
+  
+  // AI Analysis Data - Course Overview Fields
+  courseOutcomes  Json?       @map("course_outcomes") // Array of CO objects with id, description, rbtLevel, hours
+  programOutcomes Json?       @map("program_outcomes") // Array of PO objects
+  coPoMapping     Json?       @map("co_po_mapping") // CO-PO matrix mapping
+  lectures        Json?       @map("lectures") // Lecture plan data
+  practicals      Json?       @map("practicals") // Practical sessions
+  pblActivities   Json?       @map("pbl_activities") // PBL activities 
   createdAt       DateTime    @default(now()) @map("created_at")
   updatedAt       DateTime    @updatedAt @map("updated_at")
 
@@ -214,7 +222,7 @@ model CourseOutcome {
   // Relations
   subject           Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   coPoMatrices      COPOMatrix[]
-  assessmentConfigs AssessmentConfig[]
+  studentMarks      StudentMark[]
 
   @@unique([subjectId, coCode])
   @@map("course_outcomes")
@@ -257,62 +265,39 @@ model LecturePlan {
 
 // ================= ASSESSMENT & MARKS =================
 
-enum AssessmentType {
-  MSE  // Mid Semester Exam
-  ESE  // End Semester Exam
-  CEC  // Continuous Evaluation Component
-  QUIZ
-  ASSIGNMENT
-  PRACTICAL
-}
-
 model Assessment {
   id              String              @id @default(uuid()) @map("assessment_id")
   subjectId       String              @map("subject_id")
-  title           String              // "Mid Semester Exam"
-  type            AssessmentType
-  examDate        DateTime            @map("exam_date")
-  maxMarks        Int?                @map("max_marks")
+  assessmentSubType String             @map("assessment_sub_type") // "Mid", "Internal", "PBL", "External", "Viva"
+  
+  // Table 1: Student Marks Data (Enrollment No, Student Name, CO-1 to CO-6, Total)
+  studentMarksData Json?              @map("student_marks_data") // Array of {enrollmentNo, studentName, CO1, CO2, CO3, CO4, CO5, CO6, total}
+  
+  // Table 2: CO Attainment Analysis (CO, Max Marks, Threshold %, Threshold Marks, Students ≥ Threshold, Total Students, Achievement %, Attainment Level)
+  coAttainmentData Json?              @map("co_attainment_data") // Object {CO1: {maxMarks, thresholdPercent, thresholdMarks, studentsAboveThreshold, totalStudents, achievementPercent, attainmentLevel}, ...}
+  
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
   // Relations
   subject         Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  assessmentConfigs AssessmentConfig[]
 
   @@map("assessments")
-}
-
-model AssessmentConfig {
-  id              String          @id @default(uuid()) @map("config_id")
-  assessmentId    String          @map("assessment_id")
-  coId            String          @map("co_id")
-  maxMarks        Int             @map("max_marks") // e.g., 10
-  questionNumber  String?         @map("question_number") // e.g., "Q1", "Q2a"
-  createdAt       DateTime        @default(now()) @map("created_at")
-  updatedAt       DateTime        @updatedAt @map("updated_at")
-
-  // Relations
-  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
-  courseOutcome   CourseOutcome   @relation(fields: [coId], references: [id], onDelete: Cascade)
-  studentMarks    StudentMark[]
-
-  @@map("assessment_configs")
 }
 
 model StudentMark {
   id              String              @id @default(uuid()) @map("mark_id")
   studentId       String              @map("student_id")
-  configId        String              @map("config_id")
+  coId            String              @map("co_id")
   marksObtained   Float               @map("marks_obtained") // The value entered in your grid
   createdAt       DateTime            @default(now()) @map("created_at")
   updatedAt       DateTime            @updatedAt @map("updated_at")
 
   // Relations
   student         StudentProfile      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  config          AssessmentConfig    @relation(fields: [configId], references: [id], onDelete: Cascade)
+  courseOutcome   CourseOutcome       @relation(fields: [coId], references: [id], onDelete: Cascade)
 
-  @@unique([studentId, configId])
+  @@unique([studentId, coId])
   @@map("student_marks")
 }
 

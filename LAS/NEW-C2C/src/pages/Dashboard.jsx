@@ -5,9 +5,8 @@ import '../styles/Dashboard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faBook, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import DashboardComponent from '../components/Dashboard';
+import { Dashboard as DashboardComponent } from '../components/Dashboard';
 import { LayoutDashboard, ArrowLeft } from 'lucide-react';
-import { supabase } from '../supabaseClient';
 
 const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => {
   // Load courses from localStorage or use default

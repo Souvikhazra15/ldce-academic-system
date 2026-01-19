@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Dashboard as DashboardComponent } from '../components/Dashboard';
-import { supabase } from '../supabaseClient';
 import '../styles/CourseOverview.css';
 
 const CourseOverview = ({ courseId = null, onScreenChange, facultyData, onLogout }) => {
@@ -25,33 +24,33 @@ const CourseOverview = ({ courseId = null, onScreenChange, facultyData, onLogout
           return;
         }
         
-        // If not in localStorage, try to load from database
-        const { data, error: dbError } = await supabase
-          .from('ai_course_analysis')
-          .select('*')
-          .eq('course_id', finalCourseId)
-          .single();
+        // Try to load from backend database
+        const response = await fetch(`http://localhost:5000/api/curriculum/curriculum-mapping/default-program/${finalCourseId}/5`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
 
-        if (dbError && dbError.code !== 'PGRST116') {
-          throw dbError;
-        }
-
-        if (data) {
-          // Parse JSON data from database
-          const analysisResult = {
-            subject: {
-              name: data.subject_name,
-              code: data.subject_code
-            },
-            courseOutcomes: data.course_outcomes ? JSON.parse(data.course_outcomes) : [],
-            programOutcomes: data.program_outcomes ? JSON.parse(data.program_outcomes) : [],
-            coPoMapping: data.co_po_mapping ? JSON.parse(data.co_po_mapping) : {},
-            lectures: data.lectures ? JSON.parse(data.lectures) : [],
-            practicals: data.practicals ? JSON.parse(data.practicals) : [],
-            pblActivities: data.pbl_activities ? JSON.parse(data.pbl_activities) : [],
-            justifications: data.justifications ? JSON.parse(data.justifications) : {}
-          };
-          setAiAnalysisData(analysisResult);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            const mapping = result.data;
+            const analysisResult = {
+              subject: {
+                name: mapping.subjectName,
+                code: mapping.subjectCode
+              },
+              courseOutcomes: mapping.courseOutcomes || [],
+              programOutcomes: mapping.programOutcomes || [],
+              coPoMapping: mapping.coPoMapping || {},
+              lectures: mapping.lectures || [],
+              practicals: mapping.practicals || [],
+              pblActivities: mapping.pblActivities || []
+            };
+            setAiAnalysisData(analysisResult);
+          } else {
+            setError('No AI analysis found for this course. Please generate one from the Dashboard.');
+          }
         } else {
           setError('No AI analysis found for this course. Please generate one from the Dashboard.');
         }

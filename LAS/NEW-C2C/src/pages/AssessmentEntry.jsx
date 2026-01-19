@@ -9,11 +9,11 @@ import { formatCourseLabel, formatCourseReference } from '../utils/courseFormatt
 const AssessmentEntry = ({ currentScreen, courseId = 'CS101', onScreenChange, facultyData, onLogout }) => {
   // CO mark allocations for each assessment type
   const coAllocations = {
-    Mid: [4, 4, 4, 4, 4, 6],         // Total: 30
-    Internal: [3, 3, 3, 3, 4, 4],   // Total: 20
-    PBL: [4, 4, 4, 4, 4, 6],        // Total: 30 (same as Mid)
-    External: [6, 8, 19, 19, 18, 0], // Total: 70
-    Viva: [8, 10, 8, 8, 8, 8]       // Total: 50
+    Mid: [30, 30, 30, 4, 4, 6],         // CO1-CO3: 30 each, Total: 104
+    Internal: [30, 30, 30, 3, 4, 4],   // CO1-CO3: 30 each, Total: 101
+    PBL: [30, 30, 30, 4, 4, 6],        // CO1-CO3: 30 each, Total: 104
+    External: [30, 30, 30, 19, 18, 0], // CO1-CO3: 30 each, Total: 127
+    Viva: [30, 30, 30, 8, 8, 8]       // CO1-CO3: 30 each, Total: 114
   };
 
   // Assessment types with their max marks
@@ -178,26 +178,75 @@ const AssessmentEntry = ({ currentScreen, courseId = 'CS101', onScreenChange, fa
   const handleSaveDraft = async () => {
     setSaving(true);
     try {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        setSuccessMessage('Error: You are not logged in. Please refresh and login again.');
+        setSaving(false);
+        return;
+      }
+
+      // Only send data that matches the simplified schema
       const assessmentData = {
         courseId: selectedCourse,
-        assessmentType: selectedAssessmentType,
-        totalMarks: totalMarks,
-        isDraft: true,
-        students: students.map(student => ({
+        assessmentSubType: selectedAssessmentType,
+        studentMarksData: students.map(student => ({
           enrollmentNo: student.enrollmentNo,
-          coMarks: student.coMarks,
+          studentName: student.name,
+          CO1: student.coMarks[0] || 0,
+          CO2: student.coMarks[1] || 0,
+          CO3: student.coMarks[2] || 0,
+          CO4: student.coMarks[3] || 0,
+          CO5: student.coMarks[4] || 0,
+          CO6: student.coMarks[5] || 0,
           total: calculateTotal(student.coMarks)
-        }))
+        })),
+        coAttainmentData: Object.keys(coThresholds).reduce((acc, co) => {
+          const coIndex = parseInt(co.replace('CO-', '')) - 1;
+          const stats = calculateCOStats(coIndex);
+          acc[co] = {
+            maxMarks: coThresholds[co].maxMarks,
+            thresholdPercent: coThresholds[co].thresholdPercent,
+            thresholdMarks: calculateThresholdMarks(co),
+            studentsAboveThreshold: stats.studentsAboveThreshold,
+            totalStudents: stats.totalStudents,
+            achievementPercent: stats.achievementPercent,
+            attainmentLevel: stats.attainmentLevel
+          };
+          return acc;
+        }, {})
       };
 
-      console.log('Saving draft:', assessmentData);
-      await new Promise(resolve => setTimeout(resolve, 600));
+      // Save to backend API
+      const response = await fetch('http://localhost:5000/api/assessment/save-draft', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(assessmentData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          // Token is invalid, clear it and ask user to login again
+          localStorage.removeItem('authToken');
+          throw new Error('Session expired. Please refresh the page and login again.');
+        }
+        throw new Error(errorData.message || errorData.error || `Failed to save assessment (Status: ${response.status})`);
+      }
+
+      const result = await response.json();
+      console.log('Draft saved:', result);
 
       setSuccessMessage('Assessment saved as draft successfully!');
       setIsDraft(true);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error saving draft:', error);
+      setSuccessMessage(`Error: ${error.message}`);
+      setTimeout(() => setSuccessMessage(''), 5000);
     } finally {
       setSaving(false);
     }
@@ -217,26 +266,75 @@ const AssessmentEntry = ({ currentScreen, courseId = 'CS101', onScreenChange, fa
 
     setSaving(true);
     try {
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        setSuccessMessage('Error: You are not logged in. Please refresh and login again.');
+        setSaving(false);
+        return;
+      }
+
+      // Only send data that matches the simplified schema
       const assessmentData = {
         courseId: selectedCourse,
-        assessmentType: selectedAssessmentType,
-        totalMarks: totalMarks,
-        isDraft: false,
-        students: students.map(student => ({
+        assessmentSubType: selectedAssessmentType,
+        studentMarksData: students.map(student => ({
           enrollmentNo: student.enrollmentNo,
-          coMarks: student.coMarks,
+          studentName: student.name,
+          CO1: student.coMarks[0] || 0,
+          CO2: student.coMarks[1] || 0,
+          CO3: student.coMarks[2] || 0,
+          CO4: student.coMarks[3] || 0,
+          CO5: student.coMarks[4] || 0,
+          CO6: student.coMarks[5] || 0,
           total: calculateTotal(student.coMarks)
-        }))
+        })),
+        coAttainmentData: Object.keys(coThresholds).reduce((acc, co) => {
+          const coIndex = parseInt(co.replace('CO-', '')) - 1;
+          const stats = calculateCOStats(coIndex);
+          acc[co] = {
+            maxMarks: coThresholds[co].maxMarks,
+            thresholdPercent: coThresholds[co].thresholdPercent,
+            thresholdMarks: calculateThresholdMarks(co),
+            studentsAboveThreshold: stats.studentsAboveThreshold,
+            totalStudents: stats.totalStudents,
+            achievementPercent: stats.achievementPercent,
+            attainmentLevel: stats.attainmentLevel
+          };
+          return acc;
+        }, {})
       };
 
-      console.log('Assessment submitted:', assessmentData);
-      await new Promise(resolve => setTimeout(resolve, 600));
+      // Submit to backend API
+      const response = await fetch('http://localhost:5000/api/assessment/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(assessmentData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 401) {
+          // Token is invalid, clear it and ask user to login again
+          localStorage.removeItem('authToken');
+          throw new Error('Session expired. Please refresh the page and login again.');
+        }
+        throw new Error(errorData.message || errorData.error || `Failed to submit assessment (Status: ${response.status})`);
+      }
+
+      const result = await response.json();
+      console.log('Assessment submitted:', result);
 
       setSuccessMessage('Assessment submitted successfully!');
       setIsDraft(false);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error submitting assessment:', error);
+      setSuccessMessage(`Error: ${error.message}`);
+      setTimeout(() => setSuccessMessage(''), 5000);
     } finally {
       setSaving(false);
     }
