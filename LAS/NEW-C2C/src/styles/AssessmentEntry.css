@@ -1,0 +1,964 @@
+/* Assessment Entry Styles */
+.assessment-entry-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #FFFFFF, #F9FAFB);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+
+.assessment-entry {
+  flex: 1;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.assessment-main {
+  flex: 1;
+  padding: 40px 30px;
+}
+
+.assessment-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  animation: slideInDown 0.5s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.assessment-header-container h1 {
+  font-size: 36px;
+  color: #1a3a52;
+  margin: 0;
+  font-weight: 700;
+  background: linear-gradient(to right, #1a3a52, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.assessment-content-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.assessment-container {
+  width: 100%;
+  padding: 30px;
+  background-color: #ffffff;
+}
+
+/* Header Section */
+.assessment-header-section {
+  margin-bottom: 30px;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #666666;
+  font-style: italic;
+}
+
+/* Selection Panel */
+.selection-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.selection-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.selection-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333333;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.select-input {
+  padding: 10px 12px;
+  border: 1px solid #e0e7ff;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 13px;
+  color: #333333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-input:hover {
+  border-color: #1e40af;
+  background-color: #f3f4f6;
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+/* Info Box */
+.info-box {
+  background-color: #f3f4f6;
+  border-left: 4px solid #1e40af;
+  padding: 14px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1a3a52;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* CO Threshold Configuration Table */
+.co-threshold-section,
+.co-student-count-section,
+.co-attainment-section {
+  margin-bottom: 28px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a3a52;
+  margin: 0 0 6px 0;
+  padding: 0;
+  letter-spacing: -0.3px;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+  font-style: italic;
+}
+  margin: 0 0 12px 0;
+  font-style: italic;
+}
+
+/* Threshold Table */
+.threshold-table-wrapper {
+  border: 1px solid #e0e7ff;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #f9fafb;
+}
+
+.threshold-table-wrapper,
+.student-count-table-wrapper,
+.attainment-table-wrapper {
+  border: 1px solid #e0e7ff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.threshold-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background-color: #f9fafb;
+}
+
+.threshold-table thead {
+  background-color: #e0e7ff;
+  border-bottom: 2px solid #1e40af;
+}
+
+.threshold-table th {
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 600;
+  color: #1a3a52;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.threshold-table th.co-col-header {
+  text-align: left;
+}
+
+.threshold-table tbody tr {
+  border-bottom: 1px solid #ececec;
+}
+
+.threshold-table tbody tr:hover {
+  background-color: #f0f4f9;
+}
+
+.student-count-table,
+.attainment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.threshold-table thead,
+.student-count-table thead,
+.attainment-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.student-count-table thead,
+.attainment-table thead {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.student-count-table th,
+.attainment-table th {
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #333333;
+  font-size: 12px;
+  vertical-align: middle;
+  text-align: center !important;
+}
+
+.student-count-table th.co-col-header,
+.attainment-table th.co-col-header {
+  text-align: left !important;
+}
+
+.student-count-table tbody tr,
+.attainment-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.student-count-table tbody tr:hover,
+.attainment-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+
+
+.co-col-header {
+  min-width: 70px;
+}
+
+.max-marks-header,
+.marks-cell {
+  min-width: 100px;
+}
+
+.threshold-percent-header,
+.percent-cell {
+  min-width: 100px;
+}
+
+.threshold-marks-header,
+.threshold-marks-cell,
+.threshold-cell,
+.threshold-header {
+  min-width: 100px;
+}
+
+.total-header,
+.total-cell {
+  min-width: 100px;
+}
+
+.percent-header {
+  min-width: 100px;
+}
+
+.achievement-header {
+  min-width: 120px;
+  text-align: center;
+}
+
+.achievement-cell {
+  min-width: 120px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.attainment-header {
+  min-width: 150px;
+  text-align: center;
+}
+
+.attainment-cell {
+  min-width: 150px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Table Rows */
+.threshold-row,
+.student-count-row,
+.attainment-row {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.threshold-row:hover,
+.student-count-row:hover,
+.attainment-row:hover {
+  background-color: #f9f9f9;
+}
+
+.threshold-row:last-child,
+.student-count-row:last-child,
+.attainment-row:last-child {
+  border-bottom: none;
+}
+
+/* Table Cells - All Tables */
+.threshold-table td,
+.threshold-table th,
+.student-count-table td,
+.student-count-table th,
+.attainment-table td,
+.attainment-table th {
+  padding: 10px 12px;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+/* Threshold Table Cells */
+.threshold-table td {
+  color: #333333;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.threshold-table .co-cell {
+  font-weight: 600;
+  color: #1e40af;
+  text-align: left;
+}
+
+.threshold-table .marks-cell,
+.threshold-table .percent-cell,
+.threshold-table .threshold-marks-cell {
+  text-align: center;
+}
+.threshold-table .percent-cell {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+/* Student Count Table Cells */
+.student-count-table td {
+  color: #333333;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.student-count-table .co-cell {
+  font-weight: 600;
+  color: #1e40af;
+  text-align: left;
+}
+
+.student-count-table .threshold-cell,
+.student-count-table .total-cell,
+.student-count-table .percent-cell {
+  text-align: center;
+}
+
+/* Attainment Table Cells */
+.attainment-table td {
+  color: #333333;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.attainment-table .co-cell {
+  font-weight: 600;
+  color: #1e40af;
+  text-align: left;
+}
+
+.attainment-table .achievement-cell,
+.attainment-table .attainment-cell {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Generic CO Cell Styling */
+.co-cell {
+  font-weight: 600;
+  color: #1e40af;
+  text-align: left;
+}
+
+/* Threshold Input */
+.threshold-input {
+  width: auto;
+  max-width: 80px;
+  padding: 6px 8px;
+  border: 1px solid #e0e7ff;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #333333;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.threshold-input:hover {
+  border-color: #1e40af;
+  background-color: #f0f7ff;
+}
+
+.threshold-input:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.15);
+  background-color: #ffffff;
+}
+
+/* Read-only cells */
+.threshold-marks-cell,
+.threshold-cell,
+.total-cell,
+.percent-cell,
+.achievement-cell,
+.attainment-cell {
+  font-weight: 500;
+  color: #333333;
+  text-align: center;
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+.threshold-marks-cell,
+.threshold-cell,
+.total-cell,
+.achievement-cell {
+  color: #1a3a52;
+  font-weight: 600;
+}
+
+.attainment-cell {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* Stats Bar */
+.stats-bar {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stat-label {
+  color: #666666;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 10px 16px;
+  border: 2px solid #1e40af;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e40af;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  border-color: #1e40af;
+  color: #ffffff;
+  background-color: #1e40af;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.2);
+}
+
+.distribute-btn:hover {
+  border-color: #1e40af;
+  color: #ffffff;
+  background-color: #1e40af;
+}
+
+.clear-btn:hover {
+  border-color: #c62828;
+  color: #c62828;
+  background-color: #fde8e8;
+}
+
+/* Table Styles */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e0e7ff;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  background-color: #ffffff;
+}
+
+.marks-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: auto;
+}
+
+.marks-table thead {
+  background-color: #e0e7ff;
+  position: sticky;
+  top: 0;
+  display: table-header-group;
+}
+
+.marks-table th {
+  padding: 10px 6px;
+  text-align: center;
+  font-weight: 600;
+  color: #1a3a52;
+  border-bottom: 2px solid #1e40af;
+  display: table-cell;
+}
+
+.roll-header {
+  min-width: 80px;
+}
+
+.name-header {
+  min-width: 200px;
+  text-align: left;
+  padding: 10px 6px !important;
+}
+
+.marks-header {
+  min-width: 120px;
+  text-align: center;
+}
+
+.co-header {
+  min-width: 70px;
+  text-align: center;
+  white-space: normal;
+  padding: 8px 6px !important;
+  vertical-align: middle;
+  display: table-cell;
+  word-break: normal;
+}
+
+.co-max {
+  display: none;
+  font-size: 10px;
+  font-weight: 400;
+  color: #666666;
+  margin-top: 2px;
+}
+
+.sr-no-header {
+  min-width: 50px;
+  text-align: center;
+  padding: 10px 6px !important;
+}
+
+.enrollment-header {
+  min-width: 100px;
+  text-align: center;
+  padding: 10px 6px !important;
+}
+
+.name-header {
+  min-width: 150px;
+  text-align: left;
+  padding: 10px 6px !important;
+}
+
+.total-header {
+  min-width: 60px;
+  text-align: center;
+  padding: 10px 6px !important;
+}
+
+.student-row {
+  border-bottom: 1px solid #e0e7ff;
+  transition: background-color 0.2s ease;
+}
+
+.student-row:hover {
+  background-color: #f3f4f6;
+}
+
+.marks-table td {
+  padding: 10px 6px;
+  vertical-align: middle;
+}
+
+.sr-no-col {
+  min-width: 50px;
+  text-align: center;
+}
+
+.enrollment-col {
+  min-width: 100px;
+  text-align: center;
+}
+
+.name-col {
+  color: #333333;
+  min-width: 150px;
+  text-align: left;
+}
+
+.marks-col {
+  text-align: center;
+  min-width: 70px;
+  padding: 10px;
+}
+
+.co-marks-col {
+  text-align: center;
+  min-width: 70px;
+  padding: 10px;
+}
+
+.co-col {
+  text-align: center;
+  min-width: 70px;
+  padding: 8px 6px;
+}
+
+.total-col {
+  text-align: center;
+  min-width: 60px;
+  font-weight: 600;
+}
+
+.roll-col {
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.name-col {
+  color: #333333;
+}
+
+.marks-col {
+  text-align: center;
+}
+
+/* Marks Input */
+.marks-input {
+  width: 100%;
+  max-width: 50px;
+  padding: 6px 8px;
+  border: 1px solid #b0b0b0;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000000;
+  background-color: #ffffff;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.marks-input:hover {
+  border-color: #1e40af;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.15);
+}
+
+.marks-input:focus {
+  outline: none;
+  border-color: #1e40af;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.15);
+}
+
+.marks-input::placeholder {
+  color: #999999;
+}
+
+/* Submit Section */
+.submit-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.success-message {
+  width: 100%;
+  padding: 12px 16px;
+  background-color: #e8f5e9;
+  color: #1e40af;
+  border-left: 4px solid #1e40af;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  color: #333333;
+  border: 1px solid #e0e7ff;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #1e40af;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: #1e40af;
+  color: #ffffff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1e3a8a;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background-color: #e0e7ff;
+  color: #999999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666666;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .assessment-container {
+    padding: 20px;
+  }
+
+  .selection-panel {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .stats-bar {
+    gap: 12px;
+  }
+
+  .quick-actions {
+    gap: 8px;
+  }
+
+  .action-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .assessment-container {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .assessment-header h2 {
+    font-size: 22px;
+  }
+
+  .selection-panel {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .info-box {
+    font-size: 12px;
+    padding: 12px 14px;
+  }
+
+  .stats-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .stat-item {
+    padding: 8px;
+  }
+
+  .quick-actions {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .marks-table {
+    font-size: 12px;
+  }
+
+  .marks-table th,
+  .marks-table td {
+    padding: 10px;
+  }
+
+  .button-group {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .marks-input {
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .assessment-container {
+    padding: 10px;
+  }
+
+  .assessment-header h2 {
+    font-size: 18px;
+  }
+
+  .selection-panel {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .selection-group label {
+    font-size: 11px;
+  }
+
+  .select-input {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .info-box {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+
+  .stats-bar {
+    gap: 4px;
+    padding: 10px;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 4px;
+    font-size: 11px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+  }
+
+  .quick-actions {
+    gap: 6px;
+  }
+
+  .action-btn {
+    flex: 1;
+    padding: 8px;
+    font-size: 11px;
+  }
+
+  .marks-table {
+    font-size: 11px;
+  }
+
+  .marks-table th,
+  .marks-table td {
+    padding: 8px;
+  }
+
+  .roll-header,
+  .name-header,
+  .marks-header {
+    min-width: auto;
+  }
+
+  .marks-input {
+    max-width: 60px;
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+
+  .btn {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}

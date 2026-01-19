@@ -1,0 +1,365 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ================= ORGANIZATION & HIERARCHY =================
+
+model Department {
+  id              String            @id @default(uuid()) @map("department_id")
+  name            String
+  code            String            @unique // e.g., "07" (Computer)
+  hodUserId       String?           @map("hod_user_id")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  // Relations
+  hod             User?             @relation("DepartmentHOD", fields: [hodUserId], references: [id])
+  programs        Program[]
+  faculties       FacultyProfile[]
+
+  @@map("departments")
+}
+
+model Program {
+  id              String              @id @default(uuid()) @map("program_id")
+  departmentId    String              @map("department_id")
+  name            String              // e.g., "B.E. Computer Engineering"
+  totalSemesters  Int                 @map("total_semesters") // e.g., 8
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  department      Department          @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  academicTerms   AcademicTerm[]
+  curriculumMappings CurriculumMapping[]
+
+  @@map("programs")
+}
+
+model AcademicTerm {
+  id              String      @id @default(uuid()) @map("term_id")
+  programId       String      @map("program_id")
+  termNumber      Int         @map("term_number") // 1, 2, 3... 8
+  subjectIds      String[]    @map("subject_ids")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  program         Program     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  divisions       Division[]
+
+  @@unique([programId, termNumber])
+  @@map("academic_terms")
+}
+
+model Division {
+  id              String          @id @default(uuid()) @map("division_id")
+  academicTermId  String          @map("academic_term_id")
+  name            String          // "A", "B"
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  academicTerm    AcademicTerm    @relation(fields: [academicTermId], references: [id], onDelete: Cascade)
+  batches         StudentBatch[]
+  students        StudentProfile[]
+  attendanceSessions AttendanceSession[]
+
+  @@unique([academicTermId, name])
+  @@map("divisions")
+}
+
+model StudentBatch {
+  id              String          @id @default(uuid()) @map("batch_id")
+  divisionId      String          @map("division_id")
+  name            String          // "A1", "A2"
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  division        Division        @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  students        StudentProfile[]
+
+  @@unique([divisionId, name])
+  @@map("student_batches")
+}
+
+// ================= USERS & ROLES =================
+
+enum UserRole {
+  STUDENT
+  FACULTY
+  HOD
+  ADMIN
+}
+
+model User {
+  id              String          @id @default(uuid()) @map("user_id")
+  email           String          @unique
+  password        String          // Hashed password for JWT auth
+  fullName        String          @map("full_name")
+  role            UserRole
+  phone           String?
+  avatarUrl       String?         @map("avatar_url")
+  isActive        Boolean         @default(true) @map("is_active")
+  lastLogin       DateTime?       @map("last_login")
+  refreshToken    String?         @map("refresh_token") @db.Text
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  facultyProfile  FacultyProfile?
+  studentProfile  StudentProfile?
+  departmentsAsHOD Department[]   @relation("DepartmentHOD")
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model FacultyProfile {
+  id              String              @id @default(uuid()) @map("faculty_id")
+  userId          String              @unique @map("user_id")
+  departmentId    String              @map("department_id")
+  designation     String              // "Assistant Professor"
+  qualification   String              // "Ph.D"
+  joiningDate     DateTime            @map("joining_date")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  department      Department          @relation(fields: [departmentId], references: [id])
+  attendanceSessions AttendanceSession[]
+
+  @@map("faculty_profiles")
+}
+
+model StudentProfile {
+  id                  String          @id @default(uuid()) @map("student_id")
+  userId              String          @unique @map("user_id")
+  enrollmentNo        String          @unique @map("enrollment_no") // Unique University ID
+  currentDivisionId   String?         @map("current_division_id")
+  currentBatchId      String?         @map("current_batch_id")
+  electiveSubjects    String[]        @map("elective_subjects")
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentDivision     Division?       @relation(fields: [currentDivisionId], references: [id])
+  currentBatch        StudentBatch?   @relation(fields: [currentBatchId], references: [id])
+  marks               StudentMark[]
+  attendanceRecords   AttendanceRecord[]
+
+  @@index([enrollmentNo])
+  @@map("student_profiles")
+}
+
+// ================= CURRICULUM & CO-PO LOGIC =================
+
+model Subject {
+  id              String              @id @default(uuid()) @map("subject_id")
+  name            String              // "Analysis of Algorithms"
+  code            String              @unique // "3170701"
+  credits         Int
+  isElective      Boolean             @default(false) @map("is_elective")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  curriculumMappings CurriculumMapping[]
+  courseOutcomes  CourseOutcome[]
+  lecturePlans    LecturePlan[]
+  assessments     Assessment[]
+  attendanceSessions AttendanceSession[]
+
+  @@map("subjects")
+}
+
+model CurriculumMapping {
+  id              String      @id @default(uuid()) @map("mapping_id")
+  programId       String      @map("program_id")
+  subjectId       String      @map("subject_id")
+  semesterNumber  Int         @map("semester_number") // "This subject is taught in Sem 5"
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  program         Program     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  subject         Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, subjectId, semesterNumber])
+  @@map("curriculum_mappings")
+}
+
+model CourseOutcome {
+  id                String          @id @default(uuid()) @map("co_id")
+  subjectId         String          @map("subject_id")
+  coCode            String          @map("co_code") // "CO1", "CO2"
+  description       String          @db.Text
+  targetThreshold   Float           @map("target_threshold") // e.g., 40% (From your screenshot)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  subject           Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  coPoMatrices      COPOMatrix[]
+  assessmentConfigs AssessmentConfig[]
+
+  @@unique([subjectId, coCode])
+  @@map("course_outcomes")
+}
+
+model COPOMatrix {
+  id              String          @id @default(uuid()) @map("matrix_id")
+  coId            String          @map("co_id")
+  poCode          String          @map("po_code") // "PO1", "PO2"... "PO12"
+  poStrength      Int             @map("po_strength") // 1 (Low), 2 (Med), 3 (High)
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  courseOutcome   CourseOutcome   @relation(fields: [coId], references: [id], onDelete: Cascade)
+
+  @@unique([coId, poCode])
+  @@map("co_po_matrices")
+}
+
+// ================= LECTURE PLANNING (AI MODEL CACHE) =================
+
+model LecturePlan {
+  id                  String              @id @default(uuid()) @map("plan_id")
+  subjectId           String              @map("subject_id")
+  topicName           String              @map("topic_name")
+  estimatedHours      Float               @map("estimated_hours")
+  mappedCoIds         String[]            @map("mapped_co_ids") // e.g., ["CO1_ID", "CO3_ID"]
+  lectureSequence     Int                 @map("lecture_sequence") // 1, 2, 3...
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  subject             Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  attendanceSessions  AttendanceSession[]
+
+  @@unique([subjectId, lectureSequence])
+  @@map("lecture_plans")
+}
+
+// ================= ASSESSMENT & MARKS =================
+
+enum AssessmentType {
+  MSE  // Mid Semester Exam
+  ESE  // End Semester Exam
+  CEC  // Continuous Evaluation Component
+  QUIZ
+  ASSIGNMENT
+  PRACTICAL
+}
+
+model Assessment {
+  id              String              @id @default(uuid()) @map("assessment_id")
+  subjectId       String              @map("subject_id")
+  title           String              // "Mid Semester Exam"
+  type            AssessmentType
+  examDate        DateTime            @map("exam_date")
+  maxMarks        Int?                @map("max_marks")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  subject         Subject             @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  assessmentConfigs AssessmentConfig[]
+
+  @@map("assessments")
+}
+
+model AssessmentConfig {
+  id              String          @id @default(uuid()) @map("config_id")
+  assessmentId    String          @map("assessment_id")
+  coId            String          @map("co_id")
+  maxMarks        Int             @map("max_marks") // e.g., 10
+  questionNumber  String?         @map("question_number") // e.g., "Q1", "Q2a"
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  assessment      Assessment      @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  courseOutcome   CourseOutcome   @relation(fields: [coId], references: [id], onDelete: Cascade)
+  studentMarks    StudentMark[]
+
+  @@map("assessment_configs")
+}
+
+model StudentMark {
+  id              String              @id @default(uuid()) @map("mark_id")
+  studentId       String              @map("student_id")
+  configId        String              @map("config_id")
+  marksObtained   Float               @map("marks_obtained") // The value entered in your grid
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  student         StudentProfile      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  config          AssessmentConfig    @relation(fields: [configId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, configId])
+  @@map("student_marks")
+}
+
+// ================= ATTENDANCE =================
+
+model AttendanceSession {
+  id              String              @id @default(uuid()) @map("session_id")
+  divisionId      String              @map("division_id")
+  facultyId       String              @map("faculty_id")
+  subjectId       String              @map("subject_id")
+  lecturePlanId   String?             @map("lecture_plan_id") // CRITICAL: Links attendance to a Topic/CO
+  date            DateTime
+  startTime       DateTime            @map("start_time")
+  endTime         DateTime?           @map("end_time")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  division        Division            @relation(fields: [divisionId], references: [id])
+  faculty         FacultyProfile      @relation(fields: [facultyId], references: [id])
+  subject         Subject             @relation(fields: [subjectId], references: [id])
+  lecturePlan     LecturePlan?        @relation(fields: [lecturePlanId], references: [id])
+  attendanceRecords AttendanceRecord[]
+
+  @@map("attendance_sessions")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+model AttendanceRecord {
+  id              String              @id @default(uuid()) @map("record_id")
+  sessionId       String              @map("session_id")
+  studentId       String              @map("student_id")
+  status          AttendanceStatus
+  remarks         String?
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relations
+  session         AttendanceSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student         StudentProfile      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@map("attendance_records")
+}

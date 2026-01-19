@@ -1,0 +1,132 @@
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: linear-gradient(to right, #FFFFFF, #F9FAFB);
+  border-bottom: 1px solid #E5E7EB;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  font-family: 'Inter', sans-serif;
+  position: sticky;
+  top: 70px;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+  transition: all 0.3s ease;
+}
+
+.logo-container:hover {
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
+  transform: translateY(-2px);
+}
+
+.logo-icon {
+  font-size: 24px;
+  color: #1e40af;
+  transition: transform 0.3s ease;
+}
+
+.logo-container:hover .logo-icon {
+  transform: scale(1.1);
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.system-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a3a52;
+  letter-spacing: 0.3px;
+  background: linear-gradient(to right, #1a3a52, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.faculty-name {
+  margin: 0;
+  font-size: 13px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+  border: 2px solid #E5E7EB;
+  cursor: pointer;
+  font-size: 18px;
+  color: #1a3a52;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-icon:hover {
+  background: linear-gradient(135deg, #E5E7EB 0%, #D1D5DB 100%);
+  border-color: #1e40af;
+  color: #1e40af;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding: 15px 20px;
+    gap: 15px;
+  }
+
+  .header-text {
+    gap: 2px;
+  }
+
+  .system-name {
+    font-size: 16px;
+  }
+
+  .faculty-name {
+    font-size: 12px;
+  }
+
+  .logo-container {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-icon {
+    font-size: 20px;
+  }
+}

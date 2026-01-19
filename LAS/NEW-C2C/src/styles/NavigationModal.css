@@ -1,0 +1,248 @@
+.nav-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.nav-modal {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease-out;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close Button */
+.nav-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #F3F4F6;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #333333;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.nav-modal-close:hover {
+  background: #eeeeee;
+  color: #000;
+}
+
+/* Modal Header */
+.nav-modal-header {
+  padding: 30px 25px 20px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.nav-modal-header h2 {
+  margin: 0 0 5px 0;
+  color: #1a237e;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.nav-modal-header p {
+  margin: 0;
+  color: #666666;
+  font-size: 14px;
+}
+
+/* Navigation Grid (3x3) */
+.nav-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding: 25px;
+}
+
+.nav-modal-item {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.nav-modal-item:hover {
+  border-color: var(--item-color);
+  background: linear-gradient(135deg, rgba(26, 35, 126, 0.05) 0%, rgba(100, 181, 246, 0.05) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-modal-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  border-radius: 10px;
+  color: white;
+  font-size: 24px;
+}
+
+.nav-modal-item:hover .nav-modal-icon {
+  background: linear-gradient(135deg, var(--item-color) 0%, rgba(100, 181, 246, 0.8) 100%);
+}
+
+.nav-modal-label {
+  color: #333333;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Modal Footer */
+.nav-modal-footer {
+  padding: 15px 25px;
+  text-align: center;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+}
+
+.nav-modal-footer p {
+  margin: 0;
+  color: #999999;
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .nav-modal {
+    max-width: 90%;
+    border-radius: 10px;
+  }
+
+  .nav-modal-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .nav-modal-item {
+    padding: 15px;
+    gap: 8px;
+  }
+
+  .nav-modal-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .nav-modal-label {
+    font-size: 12px;
+  }
+
+  .nav-modal-header {
+    padding: 20px 20px 15px;
+  }
+
+  .nav-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .nav-modal-header p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-modal-overlay {
+    padding: 15px;
+  }
+
+  .nav-modal {
+    max-width: 100%;
+  }
+
+  .nav-modal-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .nav-modal-item {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .nav-modal-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .nav-modal-label {
+    font-size: 11px;
+  }
+
+  .nav-modal-close {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .nav-modal-header {
+    padding: 15px 15px 12px;
+  }
+
+  .nav-modal-header h2 {
+    font-size: 18px;
+    margin-bottom: 3px;
+  }
+
+  .nav-modal-header p {
+    font-size: 12px;
+  }
+
+  .nav-modal-footer {
+    padding: 12px 15px;
+  }
+
+  .nav-modal-footer p {
+    font-size: 11px;
+  }
+}

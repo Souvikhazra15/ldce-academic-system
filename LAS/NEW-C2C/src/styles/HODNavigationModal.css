@@ -1,0 +1,333 @@
+/* HoD Navigation Modal Styles - Matching Faculty UI Excellence */
+
+.hod-nav-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 58, 82, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 20px;
+  animation: fadeInOverlay 0.3s ease;
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hod-nav-modal-overlay.hidden {
+  display: none;
+}
+
+/* ============================================
+   MODAL CONTAINER
+   ============================================ */
+
+.hod-nav-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(26, 58, 82, 0.2);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUpModal 0.3s ease;
+  border: 1px solid #E5E7EB;
+  position: relative;
+}
+
+@keyframes slideUpModal {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Close Button */
+.hod-nav-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #F3F4F6;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: #1a3a52;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.hod-nav-modal-close:hover {
+  background: #E5E7EB;
+  transform: rotate(90deg);
+  color: #1e40af;
+}
+
+/* ============================================
+   MODAL HEADER
+   ============================================ */
+
+.hod-nav-modal-header {
+  background: linear-gradient(to right, #1a3a52, #1e40af);
+  padding: 28px;
+  color: white;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.hod-nav-modal-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.hod-nav-modal-header p {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ============================================
+   NAVIGATION GRID
+   ============================================ */
+
+.hod-nav-modal-content {
+  padding: 24px;
+}
+
+.hod-nav-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.hod-nav-modal-item {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  color: #1a3a52;
+  border-left: 4px solid var(--item-color, #1e40af);
+}
+
+.hod-nav-modal-item:hover {
+  border-color: var(--item-color, #1e40af);
+  background: white;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(26, 58, 82, 0.12);
+}
+
+.hod-nav-modal-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--item-color, #1e40af);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+.hod-nav-modal-item:hover .hod-nav-modal-icon {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.2);
+}
+
+.hod-nav-modal-label {
+  color: #1a3a52;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 0;
+}
+
+.hod-nav-modal-item:hover .hod-nav-modal-label {
+  color: var(--item-color, #1e40af);
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+.hod-nav-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.hod-nav-modal::-webkit-scrollbar-track {
+  background: #F9FAFB;
+}
+
+.hod-nav-modal::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+
+.hod-nav-modal::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hod-nav-modal {
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+    max-height: 80vh;
+  }
+
+  .hod-nav-modal-header {
+    padding: 24px;
+  }
+
+  .hod-nav-modal-header h2 {
+    font-size: 20px;
+  }
+
+  .hod-nav-modal-content {
+    padding: 20px;
+  }
+
+  .hod-nav-modal-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px;
+  }
+
+  .hod-nav-modal-item {
+    padding: 16px;
+  }
+
+  .hod-nav-modal-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .hod-nav-modal-label {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hod-nav-modal-header {
+    padding: 20px;
+  }
+
+  .hod-nav-modal-header h2 {
+    font-size: 18px;
+  }
+
+  .hod-nav-modal-header p {
+    font-size: 13px;
+  }
+
+  .hod-nav-modal-close {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .hod-nav-modal-content {
+    padding: 16px;
+  }
+
+  .hod-nav-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .hod-nav-modal-item {
+    padding: 14px;
+  }
+
+  .hod-nav-modal-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .hod-nav-modal-label {
+    font-size: 12px;
+  }
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibility */
+.hod-nav-modal-item:focus-visible {
+  outline: 2px solid var(--item-color, #1e40af);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .hod-nav-modal,
+  .hod-nav-modal-overlay,
+  .hod-nav-modal-item,
+  .hod-nav-modal-close {
+    animation: none;
+  }
+
+  .hod-nav-modal-item,
+  .hod-nav-modal-icon,
+  .hod-nav-modal-label,
+  .hod-nav-modal-close {
+    transition: none;
+  }
+}

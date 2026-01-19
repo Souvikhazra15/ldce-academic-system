@@ -1,0 +1,416 @@
+/* Tab Content Styles */
+.tab-content {
+  padding: 30px;
+  animation: fadeIn 0.3s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a3a52;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #E5E7EB;
+}
+
+/* Syllabus Tab Styles */
+.syllabus-header {
+  background-color: #F9FAFB;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid #E5E7EB;
+}
+
+.course-info {
+  margin: 0;
+}
+
+.course-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #1a3a52;
+  font-weight: 700;
+}
+
+.course-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.objectives-list {
+  list-style: none;
+  padding: 0;
+}
+
+.objectives-list li {
+  padding: 10px 0 10px 25px;
+  position: relative;
+  color: #555555;
+  line-height: 1.6;
+}
+
+.objectives-list li:before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #1e40af;
+  font-weight: bold;
+}
+
+.units-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.unit-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.unit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.unit-header h5 {
+  margin: 0;
+  font-size: 14px;
+  color: #333333;
+}
+
+.unit-hours {
+  background-color: #e8f2ff;
+  color: #1e40af;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.topics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.topics-list li {
+  padding: 6px 0 6px 16px;
+  position: relative;
+  font-size: 13px;
+  color: #666666;
+}
+
+.topics-list li:before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: #1e40af;
+}
+
+/* Course Outcomes Tab Styles */
+.outcomes-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.outcome-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.outcome-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.outcome-id {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.bloom-level {
+  background-color: #ffe8f0;
+  color: #d0021b;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.outcome-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.outcome-description {
+  margin: 0;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* CO-Unit Mapping Tab Styles */
+.mapping-container {
+  overflow-x: auto;
+}
+
+.mapping-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.mapping-table thead {
+  background-color: #f9f9f9;
+}
+
+.mapping-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.mapping-table td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #555555;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.unit-col {
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.co-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.co-badge {
+  background-color: #e8f2ff;
+  color: #1e40af;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Assessments Tab Styles */
+.assessments-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.assessment-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.assessment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.assessment-header h5 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #333333;
+}
+
+.assessment-type {
+  margin: 0;
+  font-size: 12px;
+  color: #999999;
+  font-weight: 500;
+}
+
+.assessment-marks {
+  display: flex;
+  gap: 8px;
+}
+
+.marks-badge,
+.weightage-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.marks-badge {
+  background-color: #e8f2ff;
+  color: #1e40af;
+}
+
+.weightage-badge {
+  background-color: #f0e8ff;
+  color: #7b2cbf;
+}
+
+.assessment-description {
+  margin: 0;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* Reports Tab Styles */
+.reports-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.report-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fafafa;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.report-header h5 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #333333;
+}
+
+.report-date {
+  margin: 0;
+  font-size: 12px;
+  color: #999999;
+}
+
+.report-type {
+  background-color: #e8ffe8;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.report-description {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+.report-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.report-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.report-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #e0e7ff;
+}
+
+.view-btn {
+  color: #1e40af;
+}
+
+.view-btn:hover {
+  border-color: #1e40af;
+  background-color: #f8fbff;
+}
+
+.download-btn {
+  color: #2e7d32;
+}
+
+.download-btn:hover {
+  border-color: #2e7d32;
+  background-color: #f1f8f4;
+}
+
+.no-reports {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999999;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tab-content {
+    padding: 20px;
+  }
+
+  .units-container,
+  .outcomes-container,
+  .assessments-container,
+  .reports-container {
+    grid-template-columns: 1fr;
+  }
+
+  .mapping-table {
+    font-size: 12px;
+  }
+
+  .mapping-table th,
+  .mapping-table td {
+    padding: 10px;
+  }
+}

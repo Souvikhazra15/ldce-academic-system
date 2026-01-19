@@ -1,0 +1,876 @@
+/* HoD Dashboard Styles - Matching Faculty UI Excellence */
+
+.hod-dashboard-page-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #FFFFFF, #F9FAFB);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
+}
+
+.hod-dashboard {
+  flex: 1;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.hod-dashboard-main {
+  flex: 1;
+  padding: 40px 30px;
+}
+
+/* ============================================
+   HEADER SECTION
+   ============================================ */
+
+.hod-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  animation: slideInDown 0.5s ease;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hod-dashboard-header h1 {
+  font-size: 32px;
+  color: #1a3a52;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.hod-dashboard-header p {
+  color: #9CA3AF;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Batch Selector */
+.hod-batch-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+  color: #1a3a52;
+  font-size: 14px;
+}
+
+.hod-batch-selector select {
+  background: transparent;
+  border: none;
+  color: #1a3a52;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+.hod-batch-selector select:focus {
+  outline: none;
+}
+
+/* ============================================
+   STAT CARDS SECTION
+   ============================================ */
+
+.hod-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
+  animation: slideInUp 0.6s ease 0.1s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hod-stat-card {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #1e40af;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.hod-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(30, 64, 175, 0.05), transparent);
+  border-radius: 50%;
+}
+
+.hod-stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(26, 58, 82, 0.15);
+}
+
+.hod-stat-icon {
+  font-size: 32px;
+  color: #1e40af;
+  min-width: 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hod-stat-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hod-stat-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hod-stat-value {
+  margin: 8px 0 0;
+  font-size: 28px;
+  color: #1a3a52;
+  font-weight: 700;
+}
+
+.hod-stat-description {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* ============================================
+   CHARTS SECTION
+   ============================================ */
+
+.hod-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
+  animation: slideInUp 0.6s ease 0.2s both;
+}
+
+.hod-chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #1e40af;
+  transition: all 0.3s ease;
+}
+
+.hod-chart-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(26, 58, 82, 0.12);
+}
+
+.hod-chart-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a3a52;
+}
+
+.hod-chart-header svg {
+  color: #1e40af;
+  min-width: 24px;
+}
+
+.hod-chart-container {
+  height: 200px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 16px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.hod-chart-bar {
+  flex: 1;
+  background: linear-gradient(180deg, #1e40af 0%, #1a3a52 100%);
+  border-radius: 6px 6px 0 0;
+  min-height: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.hod-chart-bar:hover {
+  opacity: 0.8;
+}
+
+.hod-chart-bar::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #1e40af;
+  border-radius: 50%;
+}
+
+/* ============================================
+   ALERTS SECTION
+   ============================================ */
+
+.hod-alerts-section {
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #EF4444;
+  margin-bottom: 50px;
+  animation: slideInUp 0.6s ease 0.3s both;
+}
+
+.hod-alerts-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a3a52;
+}
+
+.hod-alerts-header svg {
+  color: #EF4444;
+}
+
+.hod-alerts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.hod-alerts-table thead {
+  background: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  border-bottom: 2px solid #1e40af;
+}
+
+.hod-alerts-table th {
+  padding: 14px;
+  text-align: left;
+  color: #6B7280;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hod-alerts-table td {
+  padding: 14px;
+  border-bottom: 1px solid #E5E7EB;
+  color: #4B5563;
+}
+
+.hod-alerts-table tbody tr:hover {
+  background: #F9FAFB;
+}
+
+.hod-alert-batch {
+  font-weight: 600;
+  color: #1a3a52;
+}
+
+.hod-alert-class {
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.hod-alert-attendance {
+  color: #EF4444;
+  font-weight: 700;
+}
+
+.hod-alert-action {
+  text-align: center;
+}
+
+.hod-alert-action button {
+  color: #1e40af;
+  background: none;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.hod-alert-action button:hover {
+  background: #F0F4FF;
+  color: #1a3a52;
+}
+
+/* ============================================
+   COURSES SECTION
+   ============================================ */
+
+.hod-courses-section {
+  background: white;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #1e40af;
+  animation: slideInUp 0.6s ease 0.4s both;
+}
+
+.hod-courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.hod-courses-title {
+  font-size: 16px;
+  color: #1a3a52;
+  margin: 0;
+  font-weight: 700;
+}
+
+.hod-courses-count {
+  color: #9CA3AF;
+  font-size: 14px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.hod-add-course-btn {
+  background: #1e40af;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.hod-add-course-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.hod-add-course-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.35);
+  background: #1a3a52;
+}
+
+.hod-add-course-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.hod-courses-list {
+  display: grid;
+  gap: 16px;
+}
+
+.hod-course-item {
+  position: relative;
+  background: #F9FAFB;
+  border-radius: 10px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid #1e40af;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid #E5E7EB;
+}
+
+.hod-course-item:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(26, 35, 126, 0.15);
+}
+
+.hod-course-icon {
+  font-size: 28px;
+  color: #1e40af;
+  min-width: 36px;
+  text-align: center;
+}
+
+.hod-course-content {
+  flex: 1;
+}
+
+.hod-course-name {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #1a3a52;
+  font-weight: 600;
+}
+
+.hod-course-code {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+  font-weight: 500;
+}
+
+.hod-course-details {
+  font-size: 13px;
+  color: #666;
+  margin: 4px 0 0 0;
+}
+
+.hod-course-arrow {
+  font-size: 20px;
+  color: #1e40af;
+  font-weight: 400;
+}
+
+.hod-course-delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.hod-course-delete:hover {
+  background: #fee;
+  color: #f44336;
+  transform: scale(1.1);
+}
+
+.no-courses {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+/* ============================================
+   MODAL STYLING
+   ============================================ */
+
+.hod-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 58, 82, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hod-modal {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(26, 58, 82, 0.2);
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+  border: 1px solid #E5E7EB;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hod-modal-header {
+  background: linear-gradient(to right, #1a3a52, #1e40af);
+  padding: 28px;
+  color: white;
+  border-bottom: 2px solid #E5E7EB;
+}
+
+.hod-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.hod-modal-header p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.hod-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.hod-modal-close:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.hod-modal-content {
+  padding: 28px;
+}
+
+.hod-form-group {
+  margin-bottom: 20px;
+}
+
+.hod-form-label {
+  display: block;
+  font-weight: 700;
+  color: #1a3a52;
+  margin-bottom: 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hod-form-input,
+.hod-form-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: #1a3a52;
+  background: white;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.hod-form-input:focus,
+.hod-form-select:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  background: #F9FAFB;
+}
+
+.hod-form-input::placeholder {
+  color: #9CA3AF;
+}
+
+.hod-form-checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 12px;
+  background: #F9FAFB;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+
+.hod-form-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.hod-form-checkbox-item:hover {
+  background: white;
+}
+
+.hod-form-checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #1e40af;
+}
+
+.hod-form-checkbox-item label {
+  color: #1a3a52;
+  font-size: 14px;
+  cursor: pointer;
+  flex: 1;
+  margin: 0;
+}
+
+.hod-form-count {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.hod-modal-footer {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.hod-btn-cancel {
+  background: #F3F4F6;
+  color: #1a3a52;
+  border: 1px solid #D1D5DB;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.hod-btn-cancel:hover {
+  background: #E5E7EB;
+}
+
+.hod-btn-submit {
+  background: #1e40af;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.hod-btn-submit::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.hod-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.35);
+  background: #1a3a52;
+}
+
+.hod-btn-submit:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .hod-dashboard-main {
+    padding: 30px 20px;
+  }
+
+  .hod-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hod-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .hod-dashboard-main {
+    padding: 20px 16px;
+  }
+
+  .hod-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hod-dashboard-header h1 {
+    font-size: 24px;
+  }
+
+  .hod-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .hod-stat-card {
+    padding: 18px;
+  }
+
+  .hod-stat-value {
+    font-size: 24px;
+  }
+
+  .hod-chart-card {
+    padding: 20px;
+  }
+
+  .hod-chart-container {
+    height: 160px;
+  }
+
+  .hod-modal {
+    max-width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .hod-modal-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hod-dashboard-main {
+    padding: 16px 12px;
+  }
+
+  .hod-dashboard-header h1 {
+    font-size: 20px;
+  }
+
+  .hod-stats-grid {
+    gap: 12px;
+  }
+
+  .hod-stat-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .hod-stat-value {
+    font-size: 20px;
+  }
+
+  .hod-stat-icon {
+    font-size: 24px;
+  }
+
+  .hod-alerts-table {
+    font-size: 12px;
+  }
+
+  .hod-alerts-table th,
+  .hod-alerts-table td {
+    padding: 10px;
+  }
+
+  .hod-modal-header h3 {
+    font-size: 18px;
+  }
+
+  .hod-chart-container {
+    height: 140px;
+  }
+}
