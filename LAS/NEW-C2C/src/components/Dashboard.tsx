@@ -178,7 +178,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, courseId }) => {
       {/* AI RESULT HEADER */}
       <div className="ai-result-header">
         <div className="ai-header-content">
-          <h1 className="ai-result-title">AI-Analyzed Course Curriculum</h1>
           <div className="ai-result-meta">
             <p className="meta-item"><strong>Subject:</strong> {data?.subject?.name || 'Course Name'}</p>
             <p className="meta-item"><strong>Code:</strong> {data?.subject?.code || 'N/A'}</p>

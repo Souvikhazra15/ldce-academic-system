@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import '../styles/Dashboard.css';
+import { supabase } from '../supabaseClient';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faBook, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -52,6 +53,11 @@ const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => 
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showAddCoursePage, setShowAddCoursePage] = useState(false);
   const [showAddCourseModal, setShowAddCourseModal] = useState(false);
+  const [modalTab, setModalTab] = useState('select'); // 'select' | 'create'
+  const [createForm, setCreateForm] = useState({ name: '', code: '', credits: '', isElective: false });
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [createSuccess, setCreateSuccess] = useState('');
 
   // Get available accessible courses from HoD
   const [availableAccessibleCourses] = useState(() => {
@@ -76,7 +82,137 @@ const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => 
   }, [courses]);
 
   const handleAddCourseClick = () => {
+    setModalTab('select');
+    setCreateForm({ name: '', code: '', credits: '', isElective: false });
+    setCreateError('');
+    setCreateSuccess('');
     setShowAddCourseModal(true);
+  };
+
+  // Refreshes the access token using the stored refresh token.
+  // Returns the new access token on success, or null on failure.
+  const refreshAccessToken = async () => {
+    const storedRefresh = localStorage.getItem('refreshToken');
+    if (!storedRefresh) return null;
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/refresh-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: storedRefresh }),
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const newAccess = data.data?.accessToken;
+      const newRefresh = data.data?.refreshToken;
+      if (!newAccess) return null;
+      localStorage.setItem('authToken', newAccess);
+      if (newRefresh) localStorage.setItem('refreshToken', newRefresh);
+      // Keep facultyAuth in sync
+      const storedAuth = localStorage.getItem('facultyAuth');
+      if (storedAuth) {
+        try {
+          const parsed = JSON.parse(storedAuth);
+          parsed.token = newAccess;
+          localStorage.setItem('facultyAuth', JSON.stringify(parsed));
+        } catch (_) { /* ignore */ }
+      }
+      return newAccess;
+    } catch {
+      return null;
+    }
+  };
+
+  const handleCreateSubject = async (e) => {
+    e.preventDefault();
+    setCreateError('');
+    setCreateSuccess('');
+
+    if (!createForm.name.trim() || !createForm.code.trim() || !createForm.credits) {
+      setCreateError('Name, code, and credits are required.');
+      return;
+    }
+
+    const creditsNum = parseInt(createForm.credits, 10);
+    if (isNaN(creditsNum) || creditsNum <= 0) {
+      setCreateError('Credits must be a positive number.');
+      return;
+    }
+
+    let token = localStorage.getItem('authToken');
+    if (!token) {
+      // Try to get a fresh token before giving up
+      token = await refreshAccessToken();
+      if (!token) {
+        setCreateError('Session expired. Please log in again.');
+        return;
+      }
+    }
+
+    const body = JSON.stringify({
+      name: createForm.name.trim(),
+      code: createForm.code.trim().toUpperCase(),
+      credits: creditsNum,
+      isElective: createForm.isElective,
+    });
+
+    const doRequest = (accessToken) =>
+      fetch('http://localhost:5000/api/subjects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body,
+      });
+
+    setCreateLoading(true);
+    try {
+      let response = await doRequest(token);
+
+      // Token expired — silently refresh and retry once
+      if (response.status === 401) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          setCreateError('Session expired. Please log in again.');
+          setCreateLoading(false);
+          return;
+        }
+        response = await doRequest(newToken);
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setCreateError(result.message || 'Failed to create course.');
+        setCreateLoading(false);
+        return;
+      }
+
+      const created = result.data;
+      setCreateSuccess(`Course "${created.name}" created successfully!`);
+
+      const newCourse = {
+        id: created.id,
+        name: created.name,
+        code: created.code,
+        department: 'Computer Engineering',
+        semester: '',
+        credits: created.credits,
+        isElective: created.isElective,
+      };
+      setCourses(prev => [...prev, newCourse]);
+      setCreateForm({ name: '', code: '', credits: '', isElective: false });
+
+      setTimeout(() => {
+        setShowAddCourseModal(false);
+        setCreateSuccess('');
+      }, 1500);
+    } catch (err) {
+      console.error('Create subject error:', err);
+      setCreateError('Network error. Make sure the server is running on port 5000.');
+    } finally {
+      setCreateLoading(false);
+    }
   };
 
   const handleSelectAccessibleCourse = (course) => {
@@ -99,9 +235,50 @@ const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => 
     setShowAddCourseModal(false);
   };
 
-  const handleDeleteCourse = (courseId) => {
-    if (window.confirm('Are you sure you want to delete this course?')) {
-      setCourses(courses.filter(course => course.id !== courseId));
+  const handleDeleteCourse = async (courseId) => {
+    if (!window.confirm('Are you sure you want to delete this course? This cannot be undone.')) return;
+
+    let token = localStorage.getItem('authToken');
+
+    const doDelete = (accessToken) =>
+      fetch(`http://localhost:5000/api/subjects/${courseId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+      });
+
+    try {
+      let response = await doDelete(token);
+
+      // Token expired — silently refresh and retry
+      if (response.status === 401) {
+        const newToken = await refreshAccessToken();
+        if (!newToken) {
+          alert('Session expired. Please log in again.');
+          return;
+        }
+        response = await doDelete(newToken);
+      }
+
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        // 409 means it has related data in DB — still remove from local view
+        if (response.status === 409) {
+          alert(`Note: ${result.message || 'Course has related data and cannot be fully deleted from DB.'}\nRemoving from your view only.`);
+        } else {
+          alert(result.message || 'Failed to delete course from database.');
+          return;
+        }
+      }
+
+      // Remove from local state and localStorage
+      setCourses(prev => prev.filter(c => c.id !== courseId));
+      setShowAddCoursePage(false);
+      setSelectedCourse(null);
+    } catch (err) {
+      console.error('Delete course error:', err);
+      // Network error — still remove from local view
+      alert('Could not reach server. Removing from your view only.');
+      setCourses(prev => prev.filter(c => c.id !== courseId));
       setShowAddCoursePage(false);
       setSelectedCourse(null);
     }
@@ -146,6 +323,13 @@ const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => 
                     <p className="course-details">Semester {course.semester} | Credits {course.credits || '-'}</p>
                   </div>
                   <div className="course-card-arrow">›</div>
+                  <button
+                    className="course-card-delete"
+                    title="Delete course"
+                    onClick={(e) => { e.stopPropagation(); handleDeleteCourse(course.id); }}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
                 </div>
               ))
             ) : (
@@ -158,47 +342,134 @@ const Dashboard = ({ currentScreen, onScreenChange, facultyData, onLogout }) => 
       </div>
       <Footer />
 
-      {/* Select Available Courses Modal */}
+      {/* Add Course Modal */}
       {showAddCourseModal && (
         <div className="modal-overlay" onClick={() => setShowAddCourseModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Select Courses</h2>
+              <h2>Add Course</h2>
               <button className="modal-close" onClick={() => setShowAddCourseModal(false)}>
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             </div>
 
+            {/* Tabs */}
+            <div className="modal-tabs">
+              <button
+                className={`modal-tab${modalTab === 'select' ? ' modal-tab--active' : ''}`}
+                onClick={() => { setModalTab('select'); setCreateError(''); setCreateSuccess(''); }}
+              >
+                Select Existing
+              </button>
+              <button
+                className={`modal-tab${modalTab === 'create' ? ' modal-tab--active' : ''}`}
+                onClick={() => { setModalTab('create'); setCreateError(''); setCreateSuccess(''); }}
+              >
+                + Create New Course
+              </button>
+            </div>
+
             <div className="modal-body">
-              {availableAccessibleCourses && availableAccessibleCourses.length > 0 ? (
-                <div className="courses-selection-list">
-                  {availableAccessibleCourses.map((course) => (
-                    <div key={course.id} className="course-selection-item">
-                      <div className="course-selection-info">
-                        <h4>{course.name}</h4>
-                        <p className="course-selection-code">Code: {course.code}</p>
-                        <div className="course-selection-meta">
-                          <span>Semester: {course.semester}</span>
-                          <span>Credits: {course.credits || '-'}</span>
-                          <span>Dept: {course.department}</span>
+              {/* ── Select Tab ── */}
+              {modalTab === 'select' && (
+                availableAccessibleCourses && availableAccessibleCourses.length > 0 ? (
+                  <div className="courses-selection-list">
+                    {availableAccessibleCourses.map((course) => (
+                      <div key={course.id} className="course-selection-item">
+                        <div className="course-selection-info">
+                          <h4>{course.name}</h4>
+                          <p className="course-selection-code">Code: {course.code}</p>
+                          <div className="course-selection-meta">
+                            <span>Semester: {course.semester}</span>
+                            <span>Credits: {course.credits || '-'}</span>
+                            <span>Dept: {course.department}</span>
+                          </div>
                         </div>
+                        <button
+                          className="btn-select-course"
+                          onClick={() => handleSelectAccessibleCourse(course)}
+                        >
+                          Select
+                        </button>
                       </div>
-                      <button 
-                        className="btn-select-course"
-                        onClick={() => handleSelectAccessibleCourse(course)}
-                      >
-                        Select
-                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-accessible-courses">
+                    <p>No courses available for you.</p>
+                    <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                      Contact your HoD or create a new course using the tab above.
+                    </p>
+                  </div>
+                )
+              )}
+
+              {/* ── Create Tab ── */}
+              {modalTab === 'create' && (
+                <form className="create-course-form" onSubmit={handleCreateSubject}>
+                  <div className="form-group">
+                    <label className="form-label">Course Name <span className="required">*</span></label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      placeholder="e.g. Web Development"
+                      value={createForm.name}
+                      onChange={(e) => setCreateForm(p => ({ ...p, name: e.target.value }))}
+                      disabled={createLoading}
+                    />
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label className="form-label">Course Code <span className="required">*</span></label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="e.g. CS102"
+                        value={createForm.code}
+                        onChange={(e) => setCreateForm(p => ({ ...p, code: e.target.value }))}
+                        disabled={createLoading}
+                      />
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="no-accessible-courses">
-                  <p>No courses available for you.</p>
-                  <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-                    Contact your HoD to get access to courses in your department.
-                  </p>
-                </div>
+                    <div className="form-group">
+                      <label className="form-label">Credits <span className="required">*</span></label>
+                      <input
+                        type="number"
+                        className="form-input"
+                        placeholder="e.g. 3"
+                        min="1"
+                        max="10"
+                        value={createForm.credits}
+                        onChange={(e) => setCreateForm(p => ({ ...p, credits: e.target.value }))}
+                        disabled={createLoading}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group form-group--checkbox">
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={createForm.isElective}
+                        onChange={(e) => setCreateForm(p => ({ ...p, isElective: e.target.checked }))}
+                        disabled={createLoading}
+                      />
+                      <span>This is an elective course</span>
+                    </label>
+                  </div>
+
+                  {createError && <p className="form-feedback form-feedback--error">{createError}</p>}
+                  {createSuccess && <p className="form-feedback form-feedback--success">{createSuccess}</p>}
+
+                  <div className="form-actions">
+                    <button type="button" className="btn-cancel" onClick={() => setShowAddCourseModal(false)} disabled={createLoading}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn-create-course" disabled={createLoading}>
+                      {createLoading ? 'Creating…' : 'Create Course'}
+                    </button>
+                  </div>
+                </form>
               )}
             </div>
           </div>

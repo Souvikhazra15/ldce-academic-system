@@ -1,0 +1,376 @@
+{
+  "info": {
+    "name": "LDCE Subject Management API",
+    "_postman_id": "subject-api-collection",
+    "description": "API endpoints for managing subjects/courses in the LDCE Academic System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "subject_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login as Faculty",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.data.accessToken);",
+                  "    console.log('Access token saved:', response.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"faculty@ldce.ac.in\",\n  \"password\": \"yourpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login as a faculty member to get access token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Subjects",
+      "item": [
+        {
+          "name": "Create Subject",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('subject_id', response.data.id);",
+                  "    console.log('Subject created with ID:', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Data Structures\",\n  \"code\": \"CS101\",\n  \"credits\": 4,\n  \"isElective\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"]
+            },
+            "description": "Create a new subject/course (FACULTY, HOD, ADMIN only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Subjects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?page=1&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "isElective",
+                  "value": "false",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Get all subjects with optional filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Search Subjects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?search=data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "data"
+                }
+              ]
+            },
+            "description": "Search subjects by name or code"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Elective Subjects",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects?isElective=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"],
+              "query": [
+                {
+                  "key": "isElective",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Get only elective subjects"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects", "{{subject_id}}"]
+            },
+            "description": "Get detailed information about a specific subject"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subject",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Advanced Data Structures\",\n  \"credits\": 5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects", "{{subject_id}}"]
+            },
+            "description": "Update subject details (FACULTY, HOD, ADMIN only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subject Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects", "stats"]
+            },
+            "description": "Get statistics about subjects (total, elective, core)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Subject",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subjects/{{subject_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects", "{{subject_id}}"]
+            },
+            "description": "Delete a subject (HOD, ADMIN only)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Cases",
+      "item": [
+        {
+          "name": "Create Elective Subject",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Machine Learning\",\n  \"code\": \"CS401E\",\n  \"credits\": 3,\n  \"isElective\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"]
+            },
+            "description": "Test creating an elective subject"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Duplicate Subject (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Another Data Structures\",\n  \"code\": \"CS101\",\n  \"credits\": 4,\n  \"isElective\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"]
+            },
+            "description": "Test creating a subject with duplicate code (should return 409 error)"
+          },
+          "response": []
+        },
+        {
+          "name": "Create Subject - Missing Fields (Should Fail)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Incomplete Subject\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "subjects"]
+            },
+            "description": "Test creating a subject without required fields (should return 400 error)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

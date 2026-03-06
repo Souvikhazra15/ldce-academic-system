@@ -7,6 +7,7 @@ import prisma from './config/database.js';
 import authRoutes from './routes/authRoutes.js';
 import curriculumRoutes from './routes/curriculumRoutes.js';
 import assessmentRoutes from './routes/assessmentRoutes.js';
+import subjectRoutes from './routes/subjectRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +36,7 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/health',
       auth: '/api/auth',
+      subjects: '/api/subjects',
       curriculum: '/api/curriculum',
       assessment: '/api/assessment',
       assessmentHealth: '/api/assessment/health'
@@ -53,6 +55,7 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/subjects', subjectRoutes);
 app.use('/api/curriculum', curriculumRoutes);
 app.use('/api/assessment', assessmentRoutes);
 
